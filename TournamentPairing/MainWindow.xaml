@@ -74,7 +74,7 @@
 
             <TextBlock Text="Adresse du serveur FTP :"/>
             <TextBox Grid.Column="1"
-                     Text="{Binding FtpConnectionParameter.Address}"
+                     Text="{Binding FtpConnectionParameter.Address, UpdateSourceTrigger=PropertyChanged}"
                      MinWidth="250"/>
             
             <TextBlock Text="Login :"
