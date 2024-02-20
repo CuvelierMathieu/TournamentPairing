@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using TournamentPairing.Core;
 
@@ -11,9 +14,12 @@ public class MainViewModel : BasePropertyChanged
     private readonly FtpUploader _ftpUploader;
 
     public FtpConnectionParameter FtpConnectionParameter { get; set; }
-    public List<Tournament>? Tournaments { get; set; }
+    public ObservableCollection<Tournament>? Tournaments { get; set; }
     public ICommand ModifyLocalPathCommand { get; set; }
     public ICommand UploadCommand { get; set; }
+    public ICommand DeleteTournamentCommand { get; set; }
+    public ICommand CreateTournamentCommand { get; set; }
+    public ICommand SaveConfigCommand { get; set; }
     public bool IsEnabled { get => Get<bool>(); set => Set(value); }
 
     public MainViewModel(IConfigurationRoot config, FtpUploader ftpUploader)
@@ -22,8 +28,51 @@ public class MainViewModel : BasePropertyChanged
 
         ModifyLocalPathCommand = new RelayCommand<Tournament>(ModifyLocalPath);
         UploadCommand = new RelayCommand<Tournament>(Upload, CanUpload);
+        DeleteTournamentCommand = new RelayCommand<Tournament>(DeleteTournament);
+        CreateTournamentCommand = new RelayCommand(CreateTournament);
+        SaveConfigCommand = new RelayCommand(SaveConfig);
+
         _ftpUploader = ftpUploader;
         IsEnabled = true;
+    }
+
+    private void SaveConfig()
+    {
+        foreach (Tournament tournament in Tournaments)
+            if (tournament.IsNew)
+                tournament.IsNew = false;
+
+        var config = new
+        {
+            Tournaments = Tournaments,
+            FtpAddress = FtpConnectionParameter.Address,
+            Username = FtpConnectionParameter.Username,
+            Password = FtpConnectionParameter.Password,
+        };
+
+        string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+        File.WriteAllText("config.json", json);
+    }
+
+    private void CreateTournament()
+    {
+        Tournaments.Add(new() { Name = string.Empty, IsNew = true });
+    }
+
+    private void DeleteTournament(Tournament tournament)
+    {
+        MessageBoxResult result = MessageBox.Show(
+            $"Êtes-vous sûr de vouloir supprimer le tournoir {tournament.Name} ?",
+            "Suppression",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Cancel)
+            return;
+
+        Tournaments.Remove(tournament);
+
+        MessageBox.Show("Suppression effectuée. Pensez à enregistrer vos modifications.", "Suppression", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void ModifyLocalPath(Tournament tournament)
@@ -48,16 +97,25 @@ public class MainViewModel : BasePropertyChanged
 
     private void Upload(Tournament tournament)
     {
-        IsEnabled = false;
-
-        _ftpUploader.Upload(new UploadParameter()
+        try
         {
-            FtpConnectionParameter = FtpConnectionParameter,
-            LocalFilePath = tournament.LocalFilePath,
-            RemoteFilePath = tournament.RemoteFilePath
-        });
+            IsEnabled = false;
 
-        IsEnabled = true;
+            _ftpUploader.Upload(new UploadParameter()
+            {
+                FtpConnectionParameter = FtpConnectionParameter,
+                LocalFilePath = tournament.LocalFilePath,
+                RemoteFilePath = tournament.RemoteFilePath
+            });
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show($"Une erreur s'est produite durant l'envoi : {e.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsEnabled = true;
+        }
     }
 
     private void LoadFromConfig(IConfigurationRoot config)
