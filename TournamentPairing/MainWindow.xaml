@@ -5,8 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TournamentPairing"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+        Name="this">
+    <StackPanel IsEnabled="{Binding IsEnabled}">
 
-    </Grid>
+        <Grid HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Adresse du serveur FTP :"/>
+            <TextBox Grid.Column="1"
+                     Text="{Binding FtpConnectionParameter.Address}"/>
+            
+            <TextBlock Text="Login :"
+                       Grid.Row="1"/>
+            <TextBox Grid.Column="1"
+                       Grid.Row="1"
+                     Text="{Binding FtpConnectionParameter.Username}"/>
+
+            <TextBlock Text="Mot de passe :"
+                       Grid.Row="2"/>
+            <PasswordBox Grid.Column="1"
+                         Grid.Row="2"
+                         Name="FtpPasswordBox"
+                         PasswordChanged="FtpPasswordBox_PasswordChanged"/>
+
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding Tournaments}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <GroupBox Header="{Binding Name}"
+                              Margin="5 5 5 10">
+                        <StackPanel>
+                            <WrapPanel>
+                                <TextBlock Text="Fichier local :"/>
+                                <TextBox Text="{Binding LocalFilePath}"/>
+                                <Button Content="Modifier"
+                                        Command="{Binding ElementName=this, Path=DataContext.ModifyLocalPathCommand}"
+                                        CommandParameter="{Binding .}"/>
+                            </WrapPanel>
+
+                            <WrapPanel>
+                                <TextBlock Text="Fichier distant :"/>
+                                <TextBox Text="{Binding RemoteFilePath}"/>
+                            </WrapPanel>
+
+                            <Button Content="Envoyer"
+                                    Command="{Binding ElementName=this, Path=DataContext.UploadCommand}"
+                                    CommandParameter="{Binding .}"/>
+
+                        </StackPanel>
+                    </GroupBox>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
 </Window>

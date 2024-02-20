@@ -1,24 +1,34 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Configuration;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace TournamentPairing
+namespace TournamentPairing;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private const string AbsurdDefaultPassword = "123456790";
+    private readonly MainViewModel _viewModel;
+
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<MainWindow>()
+            .AddJsonFile("config.json")
+            .Build();
+
+        _viewModel = new(config, new FtpUploader());
+        DataContext = _viewModel;
+
+        if (_viewModel.FtpConnectionParameter.Password is not null)
+            FtpPasswordBox.Password = AbsurdDefaultPassword;
+    }
+
+    private void FtpPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (FtpPasswordBox.Password == AbsurdDefaultPassword)
+            return;
+
+        _viewModel.FtpConnectionParameter.Password = FtpPasswordBox.Password;
     }
 }
