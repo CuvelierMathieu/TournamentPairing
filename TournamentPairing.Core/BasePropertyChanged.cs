@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace TournmanetPairing.Core
+namespace TournamentPairing.Core
 {
     public abstract class BasePropertyChanged : INotifyPropertyChanged
     {

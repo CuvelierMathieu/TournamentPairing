@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TournmanetPairing.Core\TournmanetPairing.Core.csproj" />
+    <ProjectReference Include="..\TournamentPairing.Core\TournamentPairing.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

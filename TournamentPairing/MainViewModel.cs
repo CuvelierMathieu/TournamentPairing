@@ -2,7 +2,7 @@
 using Microsoft.Win32;
 using System.IO;
 using System.Windows.Input;
-using TournmanetPairing.Core;
+using TournamentPairing.Core;
 
 namespace TournamentPairing;
 

@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using TournmanetPairing.Core;
+using TournamentPairing.Core;
 
 namespace TournamentPairing
 {

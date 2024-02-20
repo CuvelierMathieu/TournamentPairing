@@ -1,4 +1,4 @@
-﻿namespace TournmanetPairing.Core;
+﻿namespace TournamentPairing.Core;
 
 public class Tournament : BasePropertyChanged
 {

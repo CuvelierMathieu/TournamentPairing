@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
         Name="this">
-    <StackPanel IsEnabled="{Binding IsEnabled}">
+    <DockPanel IsEnabled="{Binding IsEnabled}">
 
         <Grid HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -68,5 +68,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </StackPanel>
+    </DockPanel>
 </Window>
