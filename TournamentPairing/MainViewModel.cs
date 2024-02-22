@@ -107,6 +107,8 @@ public class MainViewModel : BasePropertyChanged
                 LocalFilePath = tournament.LocalFilePath,
                 RemoteFilePath = tournament.RemoteFilePath
             });
+
+            MessageBox.Show($"Le fichier a bien été envoyé !", "Envoi", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception e)
         {
