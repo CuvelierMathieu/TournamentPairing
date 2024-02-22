@@ -94,10 +94,16 @@
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Tournaments}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <GroupBox Header="{Binding Name}"
-                                  Margin="5 5 5 10">
+                                  Margin="5 5 5 10"
+                                  Width="400">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -114,7 +120,7 @@
                                 <TextBlock Text="Nom du tournoi :"
                                            Visibility="{Binding IsNew, Converter={StaticResource HideWhenFalse}}"
                                            VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding Name}"
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="{Binding IsNew, Converter={StaticResource HideWhenFalse}}"
                                          Grid.Column="1"
                                          Grid.ColumnSpan="2"/>
@@ -122,7 +128,7 @@
                                 <TextBlock Text="Fichier local :"
                                            Grid.Row="1"
                                            VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding LocalFilePath}"
+                                <TextBox Text="{Binding LocalFilePath, UpdateSourceTrigger=PropertyChanged}"
                                          Grid.Row="1"
                                          Grid.Column="1"/>
                                 <Button Content="Modifier"
@@ -134,7 +140,7 @@
                                 <TextBlock Text="Fichier distant :"
                                            Grid.Row="2"
                                            VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding RemoteFilePath}"
+                                <TextBox Text="{Binding RemoteFilePath, UpdateSourceTrigger=PropertyChanged}"
                                          Grid.Row="2"
                                          Grid.Column="1"
                                          Grid.ColumnSpan="2"/>
