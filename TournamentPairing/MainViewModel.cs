@@ -21,6 +21,7 @@ public class MainViewModel : BasePropertyChanged
     public ICommand CreateTournamentCommand { get; set; }
     public ICommand SaveConfigCommand { get; set; }
     public bool IsEnabled { get => Get<bool>(); set => Set(value); }
+    public (double Height, double Width)? ConfigDimensions { get; private set; }
 
     public MainViewModel(IConfigurationRoot config, FtpUploader ftpUploader)
     {
@@ -146,5 +147,10 @@ public class MainViewModel : BasePropertyChanged
             Username = config["Username"],
             Password = config["Password"]
         };
+
+        ConfigDimensions = double.TryParse(config["Height"].Replace('.', ','), out double height)
+            && double.TryParse(config["Width"].Replace('.', ','), out double width)
+            ? (height, width)
+            : null;
     }
 }
