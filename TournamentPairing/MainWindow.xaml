@@ -5,9 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TournamentPairing"
         mc:Ignorable="d"
-        Title="TournamentPairing" Height="450" Width="800"
+        Title="Appariements vers FTP"
+        MinWidth="836"
+        Width="836"
+        MinHeight="410"
+        Height="410"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
-        Name="this">
+        Name="this"
+        Icon="/trophy.png">
     <Window.Resources>
 
         <local:BooleanToVisibilityConverter x:Key="HideWhenFalse" WhenFalse="Collapsed" WhenTrue="Visible"/>

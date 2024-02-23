@@ -10,12 +10,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="tournament.png" />
+    <None Remove="trophy.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TournamentPairing.Core\TournamentPairing.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="tournament.png" />
+    <Resource Include="trophy.png" />
   </ItemGroup>
 
   <ItemGroup>
