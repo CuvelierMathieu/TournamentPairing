@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using TournamentPairing.Core;
@@ -20,6 +21,8 @@ public class MainViewModel : BasePropertyChanged
     public ICommand DeleteTournamentCommand { get; set; }
     public ICommand CreateTournamentCommand { get; set; }
     public ICommand SaveConfigCommand { get; set; }
+    public ICommand ModifyEmptyFileCommand { get; set; }
+    public ICommand ResetAllTournamentsCommand { get; set; }
     public bool IsEnabled { get => Get<bool>(); set => Set(value); }
     public (double Height, double Width)? ConfigDimensions { get; private set; }
 
@@ -32,9 +35,68 @@ public class MainViewModel : BasePropertyChanged
         DeleteTournamentCommand = new RelayCommand<Tournament>(DeleteTournament);
         CreateTournamentCommand = new RelayCommand(CreateTournament);
         SaveConfigCommand = new RelayCommand(SaveConfig);
+        ModifyEmptyFileCommand = new RelayCommand(ModifyEmptyFile);
+        ResetAllTournamentsCommand = new RelayCommand(ResetAllTournaments, CanResetAllTournaments);
 
         _ftpUploader = ftpUploader;
         IsEnabled = true;
+    }
+
+    private bool CanResetAllTournaments()
+    {
+        return File.Exists(FtpConnectionParameter.EmptyFile);
+    }
+
+    private void ResetAllTournaments()
+    {
+        IsEnabled = false;
+
+        List<(Tournament t, Exception e)> errors = new();
+
+        foreach (Tournament tournament in Tournaments)
+        {
+            try
+            {
+                _ftpUploader.Upload(new UploadParameter()
+                {
+                    FtpConnectionParameter = FtpConnectionParameter,
+                    LocalFilePath = FtpConnectionParameter.EmptyFile,
+                    RemoteFilePath = tournament.RemoteFilePath
+                });
+
+            }
+            catch (Exception e)
+            {
+                errors.Add((tournament, e));
+            }
+        }
+
+        if (errors.Any())
+        {
+            StringBuilder sb = new("Des erreurs ont eu lieu :\n");
+
+            foreach ((Tournament t, Exception e) in errors)
+                sb.AppendLine($"- Tournoi {t.Name} : {e}");
+
+            MessageBox.Show(sb.ToString(), "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        else
+            MessageBox.Show($"Les tournois ont bien été réinitialisés", "Envoi", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        IsEnabled = true;
+    }
+
+    private void ModifyEmptyFile()
+    {
+        OpenFileDialog openFileDialog = new()
+        {
+            CheckFileExists = true,
+            CheckPathExists = true,
+            Title = $"Choix du fichier vide"
+        };
+
+        if (openFileDialog.ShowDialog() == true)
+            FtpConnectionParameter.EmptyFile = openFileDialog.FileName;
     }
 
     private void SaveConfig()
@@ -49,6 +111,7 @@ public class MainViewModel : BasePropertyChanged
             FtpAddress = FtpConnectionParameter.Address,
             Username = FtpConnectionParameter.Username,
             Password = FtpConnectionParameter.Password,
+            EmptyFile = FtpConnectionParameter.EmptyFile,
         };
 
         string json = JsonConvert.SerializeObject(config, Formatting.Indented);
@@ -145,7 +208,8 @@ public class MainViewModel : BasePropertyChanged
         {
             Address = config["FtpAddress"],
             Username = config["Username"],
-            Password = config["Password"]
+            Password = config["Password"],
+            EmptyFile = config["EmptyFile"]
         };
 
         ConfigDimensions = double.TryParse(config["Height"].Replace('.', ','), out double height)

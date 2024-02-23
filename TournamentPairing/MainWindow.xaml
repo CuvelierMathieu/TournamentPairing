@@ -84,6 +84,22 @@
                          MinWidth="250"/>
 
         </WrapPanel>
+        
+        <WrapPanel HorizontalAlignment="Center"
+                   DockPanel.Dock="Top">
+
+            <TextBox Text="{Binding FtpConnectionParameter.EmptyFile, UpdateSourceTrigger=PropertyChanged}"
+                     MinWidth="250"
+                     MaxWidth="400"
+                     mah:TextBoxHelper.Watermark="Fichier vide"/>
+
+            <Button Content="Parcourir"
+                    Command="{Binding ModifyEmptyFileCommand}"/>
+            
+            <Button Content="Réinitialiser tous les tournois"
+                    Command="{Binding ResetAllTournamentsCommand}"/>
+
+        </WrapPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Tournaments}">
